@@ -1573,10 +1573,11 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                 if (!isFreeAiming()) {
                     this.setYRot(passenger.getYRot());
                     this.setYHeadRot(passenger.getYHeadRot());
-                } else if (passenger instanceof LivingEntity living && living.xxa != 0) {
+                } else if (passenger instanceof LivingEntity living && living.xxa != 0 && isFlying() && !isHovering()) {
                     float yawDelta = -living.xxa * 3.0f;
                     this.setYRot(this.getYRot() + yawDelta);
                     this.setYHeadRot(this.getYHeadRot() + yawDelta);
+                    living.setYRot(living.getYRot() + yawDelta);
                 }
                 this.setXRot(passenger.getXRot());
 
@@ -2083,8 +2084,8 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                     speed += glidingSpeedBonus;
                     // Slower on going astern
                     forward *= rider.zza > 0 ? 1.0f : 0.5f;
-                    // Slower on going sideways; in free-aim A/D yaws instead
-                    if (isFreeAiming()) {
+                    // In free-aim while flying A/D yaws instead of strafing; restore strafe when hovering
+                    if (isFreeAiming() && isFlying() && !isHovering()) {
                         strafing = 0;
                     } else {
                         strafing *= 0.4f;
@@ -2101,7 +2102,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                 } else {
                     // Mouse controlled yaw and pitch
                     speed *= 1.5f;
-                    strafing = isFreeAiming() ? 0 : strafing * 0.1f;
+                    strafing = (isFreeAiming() && isFlying() && !isHovering()) ? 0 : strafing * 0.1f;
                     // Diving is faster
                     // Todo: a new and better algorithm much like elytra flying
                     glidingSpeedBonus = (float) Mth.clamp(glidingSpeedBonus + this.getDeltaMovement().y * -0.05d, -0.8d, 1.5d);
