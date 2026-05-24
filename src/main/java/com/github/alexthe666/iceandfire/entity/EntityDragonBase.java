@@ -1574,7 +1574,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                     this.setYRot(passenger.getYRot());
                     this.setYHeadRot(passenger.getYHeadRot());
                 } else if (passenger instanceof LivingEntity living && living.xxa != 0) {
-                    float yawDelta = living.xxa * 3.0f;
+                    float yawDelta = -living.xxa * 3.0f;
                     this.setYRot(this.getYRot() + yawDelta);
                     this.setYHeadRot(this.getYHeadRot() + yawDelta);
                 }
