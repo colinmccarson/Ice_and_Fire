@@ -14,4 +14,8 @@ public interface ICustomMoveController {
     void setControlState(byte state);
 
     byte getControlState();
+
+    boolean isFreeAiming();
+
+    void freeAim(boolean freeAim);
 }

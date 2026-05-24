@@ -9,6 +9,7 @@ public class IafKeybindRegistry {
     public static KeyMapping dragon_strike;
     public static KeyMapping dragon_down;
     public static KeyMapping dragon_change_view;
+    public static KeyMapping dragon_freeAim;
 
     public static void init() {
         // Minecraft instance is null during data gen
@@ -22,5 +23,7 @@ public class IafKeybindRegistry {
         Minecraft.getInstance().options.keyMappings = ArrayUtils.add(Minecraft.getInstance().options.keyMappings, dragon_strike);
         Minecraft.getInstance().options.keyMappings = ArrayUtils.add(Minecraft.getInstance().options.keyMappings, dragon_down);
         Minecraft.getInstance().options.keyMappings = ArrayUtils.add(Minecraft.getInstance().options.keyMappings, dragon_change_view);
+        dragon_freeAim = new KeyMapping("key.dragon_freeAim", 89, "key.categories.gameplay");
+        Minecraft.getInstance().options.keyMappings = ArrayUtils.add(Minecraft.getInstance().options.keyMappings, dragon_freeAim);
     }
 }

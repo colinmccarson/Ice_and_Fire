@@ -638,6 +638,11 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     }
 
     @Override
+    public boolean isFreeAiming() {
+        return (entityData.get(CONTROL_STATE) >> 5 & 1) == 1;
+    }
+
+    @Override
     public void up(boolean up) {
         setStateField(0, up);
     }
@@ -660,6 +665,11 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     @Override
     public void dismount(boolean dismount) {
         setStateField(4, dismount);
+    }
+
+    @Override
+    public void freeAim(boolean freeAim) {
+        setStateField(5, freeAim);
     }
 
     private void setStateField(int i, boolean newState) {
@@ -1560,8 +1570,10 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                     passenger.stopRiding();
                 }
 
-                this.setYRot(passenger.getYRot());
-                this.setYHeadRot(passenger.getYHeadRot());
+                if (!isFreeAiming()) {
+                    this.setYRot(passenger.getYRot());
+                    this.setYHeadRot(passenger.getYHeadRot());
+                }
                 this.setXRot(passenger.getXRot());
 
                 Vec3 riderPos = this.getRiderPosition();

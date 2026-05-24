@@ -43,6 +43,8 @@ public class ClientEvents {
 
     private static final ResourceLocation SIREN_SHADER = new ResourceLocation("iceandfire:shaders/post/siren.json");
 
+    private static boolean freeAimActive = false;
+
     private final Random rand = new Random();
 
     private static boolean shouldCancelRender(LivingEntity living) {
@@ -106,10 +108,16 @@ public class ClientEvents {
                     moveController.attack(IafKeybindRegistry.dragon_strike.isDown());
                     moveController.dismount(mc.options.keyShift.isDown());
                     moveController.strike(IafKeybindRegistry.dragon_fireAttack.isDown());
+                    while (IafKeybindRegistry.dragon_freeAim.consumeClick()) {
+                        freeAimActive = !freeAimActive;
+                    }
+                    moveController.freeAim(freeAimActive);
                     byte controlState = moveController.getControlState();
                     if (controlState != previousState) {
                         IceAndFire.NETWORK_WRAPPER.sendToServer(new MessageDragonControl(entity.getId(), controlState, entity.getX(), entity.getY(), entity.getZ()));
                     }
+                } else {
+                    freeAimActive = false;
                 }
             }
             if (player.level().isClientSide && IafKeybindRegistry.dragon_change_view.isDown()) {
