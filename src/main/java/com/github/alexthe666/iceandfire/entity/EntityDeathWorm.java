@@ -749,6 +749,12 @@ public class EntityDeathWorm extends TamableAnimal implements ISyncMount, ICusto
     }
 
     @Override
+    public boolean isFreeAiming() { return false; }
+
+    @Override
+    public void freeAim(boolean freeAim) {}
+
+    @Override
     public void attack(boolean attack) {
         setStateField(2, attack);
     }

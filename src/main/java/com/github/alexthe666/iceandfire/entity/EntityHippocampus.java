@@ -699,6 +699,12 @@ public class EntityHippocampus extends TamableAnimal implements ISyncMount, IAni
     }
 
     @Override
+    public boolean isFreeAiming() { return false; }
+
+    @Override
+    public void freeAim(boolean freeAim) {}
+
+    @Override
     @Nullable
     protected SoundEvent getAmbientSound() {
         return IafSoundRegistry.HIPPOCAMPUS_IDLE;

@@ -824,6 +824,12 @@ public class EntityAmphithere extends TamableAnimal implements ISyncMount, IAnim
         setStateField(3, dismount);
     }
 
+    @Override
+    public boolean isFreeAiming() { return false; }
+
+    @Override
+    public void freeAim(boolean freeAim) {}
+
     private void setStateField(int i, boolean newState) {
         byte prevState = entityData.get(CONTROL_STATE);
         if (newState) {
