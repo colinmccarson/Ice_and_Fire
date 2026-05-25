@@ -65,20 +65,23 @@ public class ClientEvents {
     @SubscribeEvent
     public void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
         Player player = Minecraft.getInstance().player;
-        if (player.getVehicle() != null) {
-            if (player.getVehicle() instanceof EntityDragonBase) {
-                int currentView = IceAndFire.PROXY.getDragon3rdPersonView();
-                float scale = ((EntityDragonBase) player.getVehicle()).getRenderSize() / 3;
-                if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK ||
-                        Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_FRONT) {
-                    if (currentView == 1) {
-                        event.getCamera().move(-event.getCamera().getMaxZoom(scale * 1.2F), 0F, 0);
-                    } else if (currentView == 2) {
-                        event.getCamera().move(-event.getCamera().getMaxZoom(scale * 3F), 0F, 0);
-                    } else if (currentView == 3) {
-                        event.getCamera().move(-event.getCamera().getMaxZoom(scale * 5F), 0F, 0);
-                    }
+        if (player.getVehicle() instanceof EntityDragonBase dragon) {
+            int currentView = IceAndFire.PROXY.getDragon3rdPersonView();
+            float scale = dragon.getRenderSize() / 3;
+            if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK ||
+                    Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_FRONT) {
+                if (currentView == 1) {
+                    event.getCamera().move(-event.getCamera().getMaxZoom(scale * 1.2F), 0F, 0);
+                } else if (currentView == 2) {
+                    event.getCamera().move(-event.getCamera().getMaxZoom(scale * 3F), 0F, 0);
+                } else if (currentView == 3) {
+                    event.getCamera().move(-event.getCamera().getMaxZoom(scale * 5F), 0F, 0);
                 }
+            }
+            if (freeAimActive && Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
+                float relYaw = Mth.wrapDegrees(player.yHeadRot - dragon.getYRot());
+                float rollDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 45f;
+                event.setRoll(event.getRoll() + rollDegrees);
             }
         }
     }
@@ -168,14 +171,6 @@ public class ClientEvents {
     public void onPreRenderLiving(RenderLivingEvent.Pre event) {
         if (shouldCancelRender(event.getEntity())) {
             event.setCanceled(true);
-        }
-        if (freeAimActive
-                && event.getEntity() == Minecraft.getInstance().player
-                && event.getEntity().getVehicle() instanceof EntityDragonBase dragon) {
-            Player player = (Player) event.getEntity();
-            float relYaw = Mth.wrapDegrees(player.yHeadRot - dragon.getYRot());
-            float leanDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 45f;
-            event.getPoseStack().mulPose(Axis.ZP.rotationDegrees(leanDegrees));
         }
     }
 
