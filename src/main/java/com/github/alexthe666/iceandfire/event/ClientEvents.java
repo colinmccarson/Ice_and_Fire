@@ -167,6 +167,13 @@ public class ClientEvents {
         if (shouldCancelRender(event.getEntity())) {
             event.setCanceled(true);
         }
+        if (freeAimActive
+                && event.getEntity() == Minecraft.getInstance().player
+                && event.getEntity().getVehicle() instanceof EntityDragonBase) {
+            Player player = (Player) event.getEntity();
+            player.yBodyRot = player.yHeadRot;
+            player.yBodyRotO = player.yHeadRot;
+        }
     }
 
     @SubscribeEvent
