@@ -19,7 +19,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -120,13 +119,6 @@ public class ClientEvents {
                 } else {
                     freeAimActive = false;
                 }
-                if (freeAimActive && player.getVehicle() instanceof EntityDragonBase dragon) {
-                    float relYaw = Mth.wrapDegrees(player.yHeadRot - dragon.getYRot());
-                    if (Math.abs(relYaw) > 120f) {
-                        player.yHeadRot = dragon.getYRot() + Mth.clamp(relYaw, -120f, 120f);
-                        player.setYRot(player.yHeadRot);
-                    }
-                }
             }
             if (player.level().isClientSide && IafKeybindRegistry.dragon_change_view.isDown()) {
                 int currentView = IceAndFire.PROXY.getDragon3rdPersonView();
@@ -178,9 +170,8 @@ public class ClientEvents {
         if (freeAimActive
                 && event.getEntity() == Minecraft.getInstance().player
                 && event.getEntity().getVehicle() instanceof EntityDragonBase dragon) {
-            Player player = (Player) event.getEntity();
-            player.yBodyRot = dragon.getYRot();
-            player.yBodyRotO = dragon.getYRot();
+            dragon.yBodyRot = dragon.getYRot();
+            dragon.yBodyRotO = dragon.getYRot();
         }
     }
 

@@ -1574,7 +1574,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                     this.setYRot(passenger.getYRot());
                     this.setYHeadRot(passenger.getYHeadRot());
                 } else if (passenger instanceof LivingEntity living) {
-                    if (living.xxa != 0 && ((isFlying() && !isHovering()) || this.onGround())) {
+                    if (living.xxa != 0 && ((isFlying() && !isHovering()) || (this.onGround() && living.zza != 0))) {
                         float yawDelta = -living.xxa * 3.0f;
                         this.setYRot(this.getYRot() + yawDelta);
                         this.setYHeadRot(this.getYHeadRot() + yawDelta);
@@ -2184,7 +2184,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
             // Walking control
             else {
                 double forward = rider.zza;
-                double strafing = (isFreeAiming()) ? 0 : rider.xxa * 0.5f;
+                double strafing = (isFreeAiming() && rider.zza != 0) ? 0 : rider.xxa * 0.5f;
                 // Inherit y motion for dropping
                 double vertical = pTravelVector.y;
                 float speed = (float) this.getAttributeValue(Attributes.MOVEMENT_SPEED);
