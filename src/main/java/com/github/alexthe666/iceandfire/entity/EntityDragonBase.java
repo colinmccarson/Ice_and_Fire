@@ -1573,11 +1573,14 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                 if (!isFreeAiming()) {
                     this.setYRot(passenger.getYRot());
                     this.setYHeadRot(passenger.getYHeadRot());
-                } else if (passenger instanceof LivingEntity living && living.xxa != 0 && isFlying() && !isHovering()) {
-                    float yawDelta = -living.xxa * 3.0f;
-                    this.setYRot(this.getYRot() + yawDelta);
-                    this.setYHeadRot(this.getYHeadRot() + yawDelta);
-                    living.setYRot(living.getYRot() + yawDelta);
+                } else if (passenger instanceof LivingEntity living) {
+                    living.yBodyRot = living.yHeadRot;
+                    if (living.xxa != 0 && isFlying() && !isHovering()) {
+                        float yawDelta = -living.xxa * 3.0f;
+                        this.setYRot(this.getYRot() + yawDelta);
+                        this.setYHeadRot(this.getYHeadRot() + yawDelta);
+                        living.setYRot(living.getYRot() + yawDelta);
+                    }
                 }
                 this.setXRot(passenger.getXRot());
 
