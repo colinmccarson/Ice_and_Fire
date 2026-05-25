@@ -19,9 +19,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import com.mojang.math.Axis;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
@@ -166,6 +168,14 @@ public class ClientEvents {
     public void onPreRenderLiving(RenderLivingEvent.Pre event) {
         if (shouldCancelRender(event.getEntity())) {
             event.setCanceled(true);
+        }
+        if (freeAimActive
+                && event.getEntity() == Minecraft.getInstance().player
+                && event.getEntity().getVehicle() instanceof EntityDragonBase dragon) {
+            Player player = (Player) event.getEntity();
+            float relYaw = Mth.wrapDegrees(player.yHeadRot - dragon.getYRot());
+            float leanDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 15f;
+            event.getPoseStack().mulPose(Axis.ZP.rotationDegrees(leanDegrees));
         }
     }
 
