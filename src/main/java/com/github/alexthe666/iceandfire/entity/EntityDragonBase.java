@@ -1585,7 +1585,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
 
                 Vec3 riderPos = this.getRiderPosition();
                 if (isFreeAiming() && passenger instanceof LivingEntity living) {
-                    float relYaw = Mth.wrapDegrees(living.yHeadRot - this.getYRot());
+                    float relYaw = Mth.wrapDegrees(living.getYRot() - this.getYRot());
                     float sideOffset = (float) Math.sin(Mth.clamp(relYaw, -70f, 70f) * Math.PI / 180) * -1.5f;
                     float yawRad = this.getYRot() * (float) (Math.PI / 180);
                     riderPos = riderPos.add(Math.cos(yawRad) * sideOffset, 0, Math.sin(yawRad) * sideOffset);
