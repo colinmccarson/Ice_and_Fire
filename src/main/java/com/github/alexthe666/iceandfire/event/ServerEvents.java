@@ -41,6 +41,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.WitherSkeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -179,6 +180,11 @@ public class ServerEvents {
 
             if (shotEntity instanceof EntityGhost) {
                 event.setCanceled(true);
+            } else if (shotEntity instanceof EntityDragonBase dragon && event.getEntity() instanceof Projectile p) {
+                Entity owner = p.getOwner();
+                if (owner != null && owner == dragon.getControllingPassenger()) {
+                    event.setCanceled(true);
+                }
             } else if (event.getEntity() instanceof AbstractArrow arrow && arrow.getOwner() != null) {
                 Entity shootingEntity = arrow.getOwner();
 
