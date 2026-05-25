@@ -179,8 +179,8 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     public static final float[] growth_stage_1 = new float[]{1F, 3F};
     public static final float[] growth_stage_2 = new float[]{3F, 7F};
     public static final float[] growth_stage_3 = new float[]{7F, 10F};
-    public static final float[] growth_stage_4 = new float[]{10F, 14F};
-    public static final float[] growth_stage_5 = new float[]{14F, 18F};
+    public static final float[] growth_stage_4 = new float[]{10F, 12F};
+    public static final float[] growth_stage_5 = new float[]{12F, 14F};
 
     public float[][] growth_stages = new float[][]{growth_stage_1, growth_stage_2, growth_stage_3, growth_stage_4, growth_stage_5};;
 
