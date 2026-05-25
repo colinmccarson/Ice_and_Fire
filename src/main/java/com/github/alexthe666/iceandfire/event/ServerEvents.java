@@ -180,7 +180,7 @@ public class ServerEvents {
 
             if (shotEntity instanceof EntityGhost) {
                 event.setCanceled(true);
-            } else if (shotEntity instanceof EntityDragonBase dragon && event.getEntity() instanceof Projectile p && p.tickCount < 8) {
+            } else if (shotEntity instanceof EntityDragonBase dragon && event.getEntity() instanceof Projectile p && p.tickCount < 16) {
                 Entity owner = p.getOwner();
                 if (owner != null && owner == dragon.getControllingPassenger()) {
                     event.setCanceled(true);
