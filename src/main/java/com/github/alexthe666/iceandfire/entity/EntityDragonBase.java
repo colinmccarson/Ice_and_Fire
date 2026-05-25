@@ -179,8 +179,8 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     public static final float[] growth_stage_1 = new float[]{1F, 3F};
     public static final float[] growth_stage_2 = new float[]{3F, 7F};
     public static final float[] growth_stage_3 = new float[]{7F, 10F};
-    public static final float[] growth_stage_4 = new float[]{10F, 12F};
-    public static final float[] growth_stage_5 = new float[]{12F, 14F};
+    public static final float[] growth_stage_4 = new float[]{10F, 11F};
+    public static final float[] growth_stage_5 = new float[]{11F, 12F};
 
     public float[][] growth_stages = new float[][]{growth_stage_1, growth_stage_2, growth_stage_3, growth_stage_4, growth_stage_5};;
 
@@ -1574,7 +1574,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                     this.setYRot(passenger.getYRot());
                     this.setYHeadRot(passenger.getYHeadRot());
                 } else if (passenger instanceof LivingEntity living) {
-                    if (living.xxa != 0 && isFlying() && !isHovering()) {
+                    if (living.xxa != 0 && ((isFlying() && !isHovering()) || this.onGround())) {
                         float yawDelta = -living.xxa * 3.0f;
                         this.setYRot(this.getYRot() + yawDelta);
                         this.setYHeadRot(this.getYHeadRot() + yawDelta);
@@ -2184,7 +2184,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
             // Walking control
             else {
                 double forward = rider.zza;
-                double strafing = rider.xxa * 0.5f;
+                double strafing = (isFreeAiming()) ? 0 : rider.xxa * 0.5f;
                 // Inherit y motion for dropping
                 double vertical = pTravelVector.y;
                 float speed = (float) this.getAttributeValue(Attributes.MOVEMENT_SPEED);
