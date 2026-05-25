@@ -2188,7 +2188,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                 double vertical = pTravelVector.y;
                 float speed = (float) this.getAttributeValue(Attributes.MOVEMENT_SPEED);
 
-                float groundSpeedModifier = (float) (1.8F * this.getFlightSpeedModifier());
+                float groundSpeedModifier = (float) (0.9F * this.getFlightSpeedModifier());
                 speed *= groundSpeedModifier;
                 // Try to match the original riding speed
                 forward *= speed;
