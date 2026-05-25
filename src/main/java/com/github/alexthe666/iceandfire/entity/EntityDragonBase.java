@@ -2086,7 +2086,6 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                     speed += glidingSpeedBonus;
                     // Slower on going astern
                     forward *= rider.zza > 0 ? 1.0f : 0.5f;
-                    // In free-aim while flying A/D yaws instead of strafing; restore strafe when hovering
                     if (isFreeAiming() && isFlying() && !isHovering()) {
                         strafing = 0;
                     } else {
