@@ -9,6 +9,7 @@ import com.github.alexthe666.iceandfire.client.particle.CockatriceBeamRender;
 import com.github.alexthe666.iceandfire.client.render.entity.RenderChain;
 import com.github.alexthe666.iceandfire.client.render.tile.RenderFrozenState;
 import com.github.alexthe666.iceandfire.entity.EntityDragonBase;
+import com.github.alexthe666.iceandfire.entity.EntityHippogryph;
 import com.github.alexthe666.iceandfire.entity.props.EntityDataProvider;
 import com.github.alexthe666.iceandfire.entity.util.ICustomMoveController;
 import com.github.alexthe666.iceandfire.enums.EnumParticles;
@@ -171,12 +172,20 @@ public class ClientEvents {
         }
         if (freeAimActive
                 && event.getEntity() == Minecraft.getInstance().player
-                && event.getEntity().getVehicle() instanceof EntityDragonBase dragon
                 && !Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
             Player player = (Player) event.getEntity();
-            float relYaw = Mth.wrapDegrees(player.yHeadRot - dragon.getYRot());
-            float leanDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 15f;
-            event.getPoseStack().mulPose(Axis.ZP.rotationDegrees(leanDegrees));
+            Entity vehicle = player.getVehicle();
+            float leanDegrees = 0f;
+            if (vehicle instanceof EntityDragonBase dragon) {
+                float relYaw = Mth.wrapDegrees(player.yHeadRot - dragon.getYRot());
+                leanDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 15f;
+            } else if (vehicle instanceof EntityHippogryph hippo) {
+                float relYaw = Mth.wrapDegrees(player.yHeadRot - hippo.getYRot());
+                leanDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 10f;
+            }
+            if (leanDegrees != 0f) {
+                event.getPoseStack().mulPose(Axis.ZP.rotationDegrees(leanDegrees));
+            }
         }
     }
 

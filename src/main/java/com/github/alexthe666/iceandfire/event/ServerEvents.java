@@ -185,6 +185,11 @@ public class ServerEvents {
                 if (owner != null && owner == dragon.getControllingPassenger()) {
                     event.setCanceled(true);
                 }
+            } else if (shotEntity instanceof EntityHippogryph hippo && event.getEntity() instanceof Projectile p && p.tickCount < 16) {
+                Entity owner = p.getOwner();
+                if (owner != null && owner == hippo.getControllingPassenger()) {
+                    event.setCanceled(true);
+                }
             } else if (event.getEntity() instanceof AbstractArrow arrow && arrow.getOwner() != null) {
                 Entity shootingEntity = arrow.getOwner();
 
