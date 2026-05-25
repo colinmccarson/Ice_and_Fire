@@ -260,9 +260,10 @@ public class EntityIceDragon extends EntityDragonBase {
             } else if (this.getAnimationTick() == 15) {
                 Vec3 headVec = this.getHeadPosition();
                 this.playSound(IafSoundRegistry.ICEDRAGON_BREATH, 4, 1);
-                double d2 = controller.getLookAngle().x;
-                double d3 = controller.getLookAngle().y;
-                double d4 = controller.getLookAngle().z;
+                Vec3 aimVec = getClampedRiderAimVector(controller, 30f);
+                double d2 = aimVec.x;
+                double d3 = aimVec.y;
+                double d4 = aimVec.z;
                 float inaccuracy = 1.0F;
                 d2 = d2 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
                 d3 = d3 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
@@ -282,7 +283,7 @@ public class EntityIceDragon extends EntityDragonBase {
                     if (this.tickCount % 5 == 0) {
                         this.playSound(IafSoundRegistry.ICEDRAGON_BREATH, 4, 1);
                     }
-                    HitResult mop = rayTraceRider(controller, 10 * this.getDragonStage(), 1.0F);
+                    HitResult mop = rayTraceRiderClamped(controller, 10 * this.getDragonStage(), 1.0F, 30f);
                     if (mop != null) {
                         stimulateFire(mop.getLocation().x, mop.getLocation().y, mop.getLocation().z, 1);
                     }

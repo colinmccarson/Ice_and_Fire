@@ -47,6 +47,8 @@ public class ClientEvents {
 
     private static boolean freeAimActive = false;
 
+    public static boolean isFreeAimActive() { return freeAimActive; }
+
     private final Random rand = new Random();
 
     private static boolean shouldCancelRender(LivingEntity living) {

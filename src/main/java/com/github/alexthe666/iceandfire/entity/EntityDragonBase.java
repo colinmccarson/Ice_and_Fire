@@ -1815,6 +1815,14 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
         if (animationTick > this.getAnimation().getDuration() && !level().isClientSide) {
             animationTick = 0;
         }
+        // Vanilla Mob.aiStep() syncs yHeadRot to the controlling passenger's look direction.
+        // In free-aim mode the rider's look is decoupled from the dragon's heading, so
+        // BodyRotationControl would otherwise drift yBodyRot toward the camera. Lock both
+        // head and body yaw to yRot after super so we override that sync every tick.
+        if (isFreeAiming() && getControllingPassenger() != null) {
+            this.yBodyRot = this.getYRot();
+            this.setYHeadRot(this.getYRot());
+        }
     }
 
     @Override
@@ -2194,7 +2202,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                 double vertical = pTravelVector.y;
                 float speed = (float) this.getAttributeValue(Attributes.MOVEMENT_SPEED);
 
-                float groundSpeedModifier = (float) (0.9F * this.getFlightSpeedModifier());
+                float groundSpeedModifier = (float) (1.1F * this.getFlightSpeedModifier());
                 speed *= groundSpeedModifier;
                 // Try to match the original riding speed
                 forward *= speed;
@@ -2586,6 +2594,22 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
         Vec3 Vector3d1 = rider.getViewVector(partialTicks);
         Vec3 Vector3d2 = Vector3d.add(Vector3d1.x * blockReachDistance, Vector3d1.y * blockReachDistance, Vector3d1.z * blockReachDistance);
         return this.level().clip(new ClipContext(Vector3d, Vector3d2, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+    }
+
+    protected Vec3 getClampedRiderAimVector(Entity rider, float maxYawOffset) {
+        float relYaw = Mth.wrapDegrees(rider.getYHeadRot() - this.getYRot());
+        float effectiveYaw = this.getYRot() + Mth.clamp(relYaw, -maxYawOffset, maxYawOffset);
+        float pitch = rider.getXRot();
+        double yawRad = effectiveYaw * (Math.PI / 180.0);
+        double pitchRad = pitch * (Math.PI / 180.0);
+        return new Vec3(-Math.sin(yawRad) * Math.cos(pitchRad), -Math.sin(pitchRad), Math.cos(yawRad) * Math.cos(pitchRad));
+    }
+
+    public HitResult rayTraceRiderClamped(Entity rider, double blockReachDistance, float partialTicks, float maxYawOffset) {
+        Vec3 eye = rider.getEyePosition(partialTicks);
+        Vec3 aim = getClampedRiderAimVector(rider, maxYawOffset);
+        Vec3 end = eye.add(aim.x * blockReachDistance, aim.y * blockReachDistance, aim.z * blockReachDistance);
+        return this.level().clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
     }
 
     /**
