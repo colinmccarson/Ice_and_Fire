@@ -275,7 +275,6 @@ public class EntityLightningDragon extends EntityDragonBase {
             if (this.getAnimation() != ANIMATION_FIRECHARGE) {
                 this.setAnimation(ANIMATION_FIRECHARGE);
             } else if (this.getAnimationTick() == 20) {
-                setYRot(yBodyRot);
                 Vec3 headVec = this.getHeadPosition();
                 this.playSound(IafSoundRegistry.LIGHTNINGDRAGON_BREATH_CRACKLE, 4, 1);
                 double d2 = controller.getLookAngle().x;
@@ -295,7 +294,6 @@ public class EntityLightningDragon extends EntityDragonBase {
         } else {
             if (this.isBreathingFire()) {
                 if (this.isActuallyBreathingFire()) {
-                    setYRot(yBodyRot);
                     if (this.fireTicks % 7 == 0) {
                         this.playSound(IafSoundRegistry.LIGHTNINGDRAGON_BREATH, 4, 1);
                     }

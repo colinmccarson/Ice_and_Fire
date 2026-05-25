@@ -258,7 +258,6 @@ public class EntityIceDragon extends EntityDragonBase {
             if (this.getAnimation() != ANIMATION_FIRECHARGE) {
                 this.setAnimation(ANIMATION_FIRECHARGE);
             } else if (this.getAnimationTick() == 15) {
-                setYRot(yBodyRot);
                 Vec3 headVec = this.getHeadPosition();
                 this.playSound(IafSoundRegistry.ICEDRAGON_BREATH, 4, 1);
                 double d2 = controller.getLookAngle().x;
@@ -280,7 +279,6 @@ public class EntityIceDragon extends EntityDragonBase {
         } else {
             if (this.isBreathingFire()) {
                 if (this.isActuallyBreathingFire()) {
-                    setYRot(yBodyRot);
                     if (this.tickCount % 5 == 0) {
                         this.playSound(IafSoundRegistry.ICEDRAGON_BREATH, 4, 1);
                     }
