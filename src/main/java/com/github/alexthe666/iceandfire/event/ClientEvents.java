@@ -78,11 +78,6 @@ public class ClientEvents {
                     event.getCamera().move(-event.getCamera().getMaxZoom(scale * 5F), 0F, 0);
                 }
             }
-            if (freeAimActive && Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
-                float relYaw = Mth.wrapDegrees(player.yHeadRot - dragon.getYRot());
-                float rollDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 45f;
-                event.setRoll(event.getRoll() + rollDegrees);
-            }
         }
     }
 
@@ -171,6 +166,15 @@ public class ClientEvents {
     public void onPreRenderLiving(RenderLivingEvent.Pre event) {
         if (shouldCancelRender(event.getEntity())) {
             event.setCanceled(true);
+        }
+        if (freeAimActive
+                && event.getEntity() == Minecraft.getInstance().player
+                && event.getEntity().getVehicle() instanceof EntityDragonBase dragon
+                && !Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
+            Player player = (Player) event.getEntity();
+            float relYaw = Mth.wrapDegrees(player.yHeadRot - dragon.getYRot());
+            float leanDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 15f;
+            event.getPoseStack().mulPose(Axis.ZP.rotationDegrees(leanDegrees));
         }
     }
 
