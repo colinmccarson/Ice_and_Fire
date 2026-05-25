@@ -174,7 +174,7 @@ public class ClientEvents {
                 && event.getEntity().getVehicle() instanceof EntityDragonBase dragon) {
             Player player = (Player) event.getEntity();
             float relYaw = Mth.wrapDegrees(player.yHeadRot - dragon.getYRot());
-            float leanDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 15f;
+            float leanDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 45f;
             event.getPoseStack().mulPose(Axis.ZP.rotationDegrees(leanDegrees));
         }
     }
