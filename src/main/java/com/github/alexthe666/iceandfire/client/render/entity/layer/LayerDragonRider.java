@@ -82,7 +82,7 @@ public class LayerDragonRider extends RenderLayer<EntityDragonBase, AdvancedEnti
                 }
                 matrixStackIn.pushPose();
                 matrixStackIn.mulPose(Axis.ZP.rotationDegrees(180.0F));
-                matrixStackIn.mulPose(Axis.YP.rotationDegrees(riderRot+180));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(180.0F - riderRot));
                 matrixStackIn.scale(1 / dragonScale, 1 / dragonScale, 1 / dragonScale);
                 matrixStackIn.translate(0, -0.25F, 0);
                 renderEntity(passenger, 0, 0, 0, 0.0F, partialTicks, matrixStackIn, bufferIn, packedLightIn);

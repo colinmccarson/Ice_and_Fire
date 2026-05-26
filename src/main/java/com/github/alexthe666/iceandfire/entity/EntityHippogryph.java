@@ -104,6 +104,12 @@ public class EntityHippogryph extends TamableAnimal implements ISyncMount, IAnim
     private boolean dismountedMidFlight = false;
     private boolean hadControllingPassengerLastTick = false;
     private int dismountGlideTicks = 0;
+    private int helixTicks = -1;
+    private float helixAngle = 0f;
+    private double helixCenterX = 0;
+    private double helixCenterZ = 0;
+    private float helixDescentRate = 0f;
+    private float helixDirection = 1f;
 
     public EntityHippogryph(EntityType<? extends TamableAnimal> type, Level worldIn) {
         super(type, worldIn);
@@ -929,6 +935,7 @@ public class EntityHippogryph extends TamableAnimal implements ISyncMount, IAnim
             this.setFlying(false);
             this.setHovering(false);
             dismountedMidFlight = false;
+            helixTicks = -1;
         }
         if (this.isHovering()) {
             if (this.isOrderedToSit()) {
@@ -936,7 +943,12 @@ public class EntityHippogryph extends TamableAnimal implements ISyncMount, IAnim
             }
             this.hoverTicks++;
             if (this.doesWantToLand() && dismountGlideTicks <= 0) {
-                this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05D, 0));
+                if (dismountedMidFlight) {
+                    this.setFlying(true);
+                    this.setHovering(false);
+                } else {
+                    this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05D, 0));
+                }
             } else {
                 if (this.getControllingPassenger() == null) {
                     this.setDeltaMovement(this.getDeltaMovement().add(0, 0.03D, 0));
@@ -964,18 +976,50 @@ public class EntityHippogryph extends TamableAnimal implements ISyncMount, IAnim
                 this.setFlying(false);
                 dismountedMidFlight = false;
                 dismountGlideTicks = 0;
-            } else if (dismountGlideTicks <= 0) {
+                helixTicks = -1;
+            } else if (dismountGlideTicks <= 0 && !dismountedMidFlight) {
                 this.setDeltaMovement(this.getDeltaMovement().add(0, -0.03D, 0));
-                if (dismountedMidFlight && !level().isClientSide && this.getNavigation().isDone()) {
-                    BlockPos groundPos = this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, this.blockPosition());
-                    this.getNavigation().moveTo(groundPos.getX() + 0.5, groundPos.getY(), groundPos.getZ() + 0.5, 1.0);
-                }
+            }
+        }
+        if (dismountedMidFlight && !this.onGround() && dismountGlideTicks <= 0) {
+            this.setFlying(true);
+            this.setHovering(false);
+            this.flyProgress = 20f;
+            boolean doingHelix = false;
+            if (helixTicks == -1) {
+                helixTicks = 200;
+                helixAngle = 0f;
+                helixCenterX = this.getX();
+                helixCenterZ = this.getZ() - 5.0;
+                helixDirection = (this.getId() & 1) == 0 ? 1f : -1f;
+                BlockPos groundPos = this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, this.blockPosition());
+                helixDescentRate = Mth.clamp((float)(this.getY() - groundPos.getY()) / 40f, 0.25f, 1.0f);
+                this.getNavigation().stop();
+            }
+            if (helixTicks > 0) {
+                helixTicks--;
+                helixAngle += 3.375f * helixDirection;
+                double rad = Math.toRadians(helixAngle);
+                double targetX = helixCenterX + Math.sin(rad) * 5.0;
+                double targetZ = helixCenterZ + Math.cos(rad) * 5.0;
+                double dx = targetX - this.getX();
+                double dz = targetZ - this.getZ();
+                this.setDeltaMovement(dx, -helixDescentRate, dz);
+                float facingYaw = (float) -Math.toDegrees(Math.atan2(dx, dz));
+                this.setYRot(facingYaw);
+                this.setYHeadRot(facingYaw);
+                this.yBodyRot = facingYaw;
+                this.getNavigation().stop();
+                doingHelix = true;
+            }
+            if (!doingHelix) {
+                this.setDeltaMovement(this.getDeltaMovement().add(0, -0.03D, 0));
             }
         }
         if (this.isFlying()) {
             this.flyTicks++;
         }
-        if ((this.isHovering() || this.isFlying()) && this.isOrderedToSit()) {
+        if ((this.isHovering() || this.isFlying()) && this.isOrderedToSit() && (this.onGround() || this.isVehicle())) {
             this.setFlying(false);
             this.setHovering(false);
         }
@@ -1006,6 +1050,7 @@ public class EntityHippogryph extends TamableAnimal implements ISyncMount, IAnim
     public void tick() {
         super.tick();
         isOverAir = this.isOverAirLogic();
+        boolean wasAirborne = this.isFlying() || this.isHovering();
         if (this.isGoingUp()) {
             if (this.airBorneCounter == 0) {
                 this.setDeltaMovement(this.getDeltaMovement().add(0, 0.02F, 0));
@@ -1013,7 +1058,7 @@ public class EntityHippogryph extends TamableAnimal implements ISyncMount, IAnim
             if (!this.isFlying() && !this.isHovering()) {
                 this.spacebarTicks += 2;
             }
-        } else if (this.dismountIAF()) {
+        } else if (this.getControllingPassenger() != null && this.dismountIAF()) {
             if (this.isFlying() || this.isHovering()) {
                 this.setFlying(false);
                 this.setHovering(false);
@@ -1034,13 +1079,14 @@ public class EntityHippogryph extends TamableAnimal implements ISyncMount, IAnim
         }
 
         boolean hasControllingPassenger = this.getControllingPassenger() != null;
-        if (!hasControllingPassenger && hadControllingPassengerLastTick && (this.isFlying() || this.isHovering())) {
+        if (!hasControllingPassenger && hadControllingPassengerLastTick && wasAirborne) {
             dismountedMidFlight = true;
-            dismountGlideTicks = 30;
+            dismountGlideTicks = 10;
         }
         if (hasControllingPassenger) {
             dismountedMidFlight = false;
             dismountGlideTicks = 0;
+            helixTicks = -1;
         }
         if (dismountedMidFlight && dismountGlideTicks > 0) {
             dismountGlideTicks--;

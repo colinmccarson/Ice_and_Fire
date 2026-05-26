@@ -1587,7 +1587,18 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                 Vec3 riderPos = this.getRiderPosition();
                 if (isFreeAiming() && passenger instanceof LivingEntity living) {
                     float relYaw = Mth.wrapDegrees(living.getYRot() - this.getYRot());
-                    float sideOffset = (float) Math.sin(Mth.clamp(relYaw, -70f, 70f) * Math.PI / 180) * -1.5f;
+                    float absYaw = Math.abs(relYaw);
+                    float sideSign = Math.signum(relYaw);
+                    float sideOffset;
+                    if (absYaw <= 70f) {
+                        sideOffset = sideSign * (float) Math.sin(Math.toRadians(absYaw)) * -1.5f;
+                    } else if (absYaw <= 110f) {
+                        float peak = (float) Math.sin(Math.toRadians(70f));
+                        float taper = (float) Math.cos(Math.toRadians((absYaw - 70f) / 40f * 90f));
+                        sideOffset = sideSign * peak * taper * -1.5f;
+                    } else {
+                        sideOffset = 0f;
+                    }
                     float yawRad = this.getYRot() * (float) (Math.PI / 180);
                     riderPos = riderPos.add(Math.cos(yawRad) * sideOffset, 0, Math.sin(yawRad) * sideOffset);
                 }
@@ -2203,7 +2214,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                 double vertical = pTravelVector.y;
                 float speed = (float) this.getAttributeValue(Attributes.MOVEMENT_SPEED);
 
-                float groundSpeedModifier = (float) (1.1F * this.getFlightSpeedModifier());
+                float groundSpeedModifier = 0.95f;
                 speed *= groundSpeedModifier;
                 // Try to match the original riding speed
                 forward *= speed;

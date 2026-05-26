@@ -165,6 +165,17 @@ public class ClientEvents {
         }
     }
 
+    private static float computeLean(float relYaw, float maxLean) {
+        float absYaw = Math.abs(relYaw);
+        float sign = Math.signum(relYaw);
+        if (absYaw <= 70f) {
+            return sign * (absYaw / 70f) * maxLean;
+        } else if (absYaw <= 110f) {
+            return sign * (float) Math.cos(Math.toRadians((absYaw - 70f) / 40f * 90f)) * maxLean;
+        }
+        return 0f;
+    }
+
     @SubscribeEvent
     public void onPreRenderLiving(RenderLivingEvent.Pre event) {
         if (shouldCancelRender(event.getEntity())) {
@@ -178,10 +189,10 @@ public class ClientEvents {
             float leanDegrees = 0f;
             if (vehicle instanceof EntityDragonBase dragon) {
                 float relYaw = Mth.wrapDegrees(player.yHeadRot - dragon.getYRot());
-                leanDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 15f;
+                leanDegrees = computeLean(relYaw, 15f);
             } else if (vehicle instanceof EntityHippogryph hippo) {
                 float relYaw = Mth.wrapDegrees(player.yHeadRot - hippo.getYRot());
-                leanDegrees = Mth.clamp(relYaw, -70f, 70f) / 70f * 10f;
+                leanDegrees = computeLean(relYaw, 10f);
             }
             if (leanDegrees != 0f) {
                 event.getPoseStack().mulPose(Axis.ZP.rotationDegrees(leanDegrees));
