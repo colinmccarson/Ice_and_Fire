@@ -13,6 +13,8 @@ import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HorseModel;
 import net.minecraft.client.model.HumanoidModel;
@@ -47,7 +49,9 @@ public class LayerDragonRider extends RenderLayer<EntityDragonBase, AdvancedEnti
                     prey = false;
                 }
                 ClientProxy.currentDragonRiders.remove(passenger.getUUID());
-                float riderRot = passenger.yRotO + (passenger.getYRot() - passenger.yRotO) * partialTicks;
+                float riderRot = passenger instanceof LivingEntity living
+                        ? -Mth.rotLerp(partialTicks, living.yBodyRotO, living.yBodyRot)
+                        : -(passenger.yRotO + (passenger.getYRot() - passenger.yRotO) * partialTicks);
                 int animationTicks = 0;
                 if (dragon.getAnimation() == EntityDragonBase.ANIMATION_SHAKEPREY) {
                     animationTicks = dragon.getAnimationTick();
